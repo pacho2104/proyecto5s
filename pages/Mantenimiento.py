@@ -78,7 +78,38 @@ if id_sel:
         df.to_csv(ARCHIVO, index=False)
         st.warning("Indicador desactivado")
         st.rerun()
+    
+
 
 # ---------- TABLA ----------
 st.subheader("📊 Tabla visible (solo activos)")
+# ---------- LIMPIAR TABLA ----------
+if "confirmar_borrado_ind" not in st.session_state:
+    st.session_state.confirmar_borrado_ind = False
+
+if st.button("🧹 Limpiar todos los indicadores"):
+    st.session_state.confirmar_borrado_ind = True
+
+if st.session_state.confirmar_borrado_ind:
+    st.warning(
+        "⚠️ Al eliminar los indicadores también se eliminarán los resultados "
+        "relacionados con ellos.\n\n¿Desea continuar?"
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("❌ Cancelar"):
+            st.session_state.confirmar_borrado_ind = False
+            st.rerun()
+
+    with col2:
+        if st.button("✅ Sí, eliminar"):
+            df_vacio = df.iloc[0:0]
+            df_vacio.to_csv(ARCHIVO, index=False)
+
+            st.success("Indicadores eliminados permanentemente")
+            st.session_state.confirmar_borrado_ind = False
+            st.rerun()
+
 st.dataframe(df_activos,hide_index=True)

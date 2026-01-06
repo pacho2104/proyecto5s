@@ -51,6 +51,38 @@ if responsable_filtro:
 st.divider()
 st.subheader("📋 Evaluaciones registradas")
 
+# ---------- LIMPIAR TABLA ----------
+
+if "confirmar_borrado_eval" not in st.session_state:
+    st.session_state.confirmar_borrado_eval = False
+
+if st.button("🧹 Limpiar todas las evaluaciones"):
+    st.session_state.confirmar_borrado_eval = True
+
+if st.session_state.confirmar_borrado_eval:
+    st.warning(
+        "⚠️ ¿Estás seguro de eliminar todas las evaluaciones?\n\n"
+        "Esta acción no se puede deshacer."
+    )
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("❌ Cancelar"):
+            st.session_state.confirmar_borrado_eval = False
+            st.rerun()
+
+    with col2:
+        if st.button("✅ Sí, eliminar"):
+            df_vacio = df.iloc[0:0]   # mantiene columnas
+            df_vacio.to_csv(ARCH_EVAL, index=False)
+
+            st.success("Evaluaciones eliminadas correctamente")
+            st.session_state.confirmar_borrado_eval = False
+            st.rerun()
+
+
+
 st.dataframe(df_filtrado, use_container_width=True,hide_index=True)
 
 st.caption(f"Total de evaluaciones encontradas: {len(df_filtrado)}")
